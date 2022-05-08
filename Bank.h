@@ -5,8 +5,8 @@
 //  Created by Ofir Ben Yosef on 03/05/2022.
 //
 
-#ifndef Bank_hpp
-#define Bank_hpp
+#ifndef Bank_h
+#define Bank_h
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -33,4 +33,4 @@ public:
     void print_account();
 };
 
-#endif /* Bank_hpp */
+#endif /* Bank_h */

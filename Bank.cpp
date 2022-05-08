@@ -5,8 +5,8 @@
 //  Created by Ofir Ben Yosef on 03/05/2022.
 //
 
-#include "Bank.hpp"
-
+#include "Bank.h"
+using namespace std;
 //add func that check if the acc id is taken
 account::account(int ATM,int account_id,int password,int balance){
       this->account_id = account_id;
