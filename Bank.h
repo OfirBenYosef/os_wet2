@@ -16,6 +16,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+#include <time.h>
+#include <cmath>
+#include <list>
 
 using namespace std;
 
@@ -25,12 +28,18 @@ public:
     int password;
     int balance;
     
-    account(int ATM,int account_id,int password,int balance);
+    account(int account_id,int password,int balance);
     void deposit(int ATM,int password,int balance_new);
     void withdrew(int ATM,int password,int balance_new);
     void find_balance(int ATM,int password);
-    void close_account(int ATM,int password);
+    bool close_account(int ATM,int password);
     void print_account();
+    int take_commission(int amount_of_commission);
+    bool take_transaction(int ATM,int account_id,int password,int amount);
+    void give_transaction(int ATM,int account_id,int amount);
 };
-
+void transaction(int ATM,int account_id,int target,int amount);
+bool find_account(int account_id,list<account>::iterator it_t);
+void open_account(int ATM,int account_id,int password,int balance);
+void print_no_account_error(int ATM, int account_id);
 #endif /* Bank_h */
