@@ -134,3 +134,30 @@ void transaction(int ATM,int account_id,int password,int target,int amount){
         cout <<ATM<< ": Transfer "<< amount<<" from account "<<account_id <<" to account " <<target<<" new account balance is "<<it_acc->balance<<" new target account balance is "<<it_target->balance<<endl;
     }
 }
+
+void close_account_shell(int ATM,int account_id,int password){
+    list<account>::iterator it_acc;
+    if(find_account(account_id,it_acc)){
+        if(it_acc->close_account(account_id,password)){
+            Bank.erase(it_acc);
+            return;
+        }
+        else{
+            perror("Error");
+        }
+    }
+    print_no_account_error(ATM,account_id);
+}
+bool account::operator <(const account & account_2)const{
+    return this->account_id < account_2.account_id;
+}
+void print_accounts(){
+    while(1){
+        Bank.sort();
+        printf("\033[2J\033[1;1H");
+        for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
+            it->print_account();
+        }
+        usleep(500000);
+    }
+}
