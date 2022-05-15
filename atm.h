@@ -20,6 +20,7 @@
 #include <iostream>
 #include <utility>
 #include <algorithm>
+#include "lock.h"
 
 
 void* open_file(void * info);

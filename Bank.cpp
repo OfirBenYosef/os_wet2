@@ -7,6 +7,7 @@
 
 #include "Bank.h"
 list<account> Bank;
+int bank_account;
 //add func that check if the acc id is taken
 account::account(int account_id,int password,int balance){
       this->account_id = account_id;
@@ -15,6 +16,7 @@ account::account(int account_id,int password,int balance){
 }
 
 void account::deposit(int ATM,int password,int balance_new){
+
     if(this->password == password){
       this->balance = this->balance + balance_new;
         cout<<ATM<<": Account "<<this->account_id<<" new balance is "<<this->balance<<" after "<<balance_new<<" $ was deposited"<<endl;
@@ -159,5 +161,16 @@ void print_accounts(){
             it->print_account();
         }
         usleep(500000);
+    }
+}
+void commission(){
+    while(1){
+        int commission = random_commission();
+        int bank_gain = 0;
+        for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
+            bank_gain += it->take_commission(commission);
+        }
+        bank_account += bank_gain;
+        sleep(3);
     }
 }

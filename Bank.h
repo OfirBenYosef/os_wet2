@@ -1,5 +1,5 @@
 //
-//  Bank.hpp
+//  Bank.h
 //  Bank
 //
 //  Created by Ofir Ben Yosef on 03/05/2022.
@@ -19,6 +19,7 @@
 #include <time.h>
 #include <cmath>
 #include <list>
+#include "lock.h"
 
 using namespace std;
 
