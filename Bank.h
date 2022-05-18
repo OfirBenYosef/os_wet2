@@ -46,6 +46,6 @@ void open_account(int ATM,int account_id,int password,int balance);
 void print_no_account_error(int ATM, int account_id);
 void close_account_shell(int ATM,int password,int account_id);
 void print_accounts();
-
+extern locker atm_locker;
 extern list<account> Bank;
 #endif /* Bank_h */

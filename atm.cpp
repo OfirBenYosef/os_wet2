@@ -18,6 +18,7 @@ void* open_file(void * info){
     string line;
     ifstream atm_file(ATM_file);
     const char* delimiter = " ";
+    
     while(getline(atm_file,line)){
         usleep(100000);
         char* args[MAX_ARGS];
@@ -30,10 +31,13 @@ void* open_file(void * info){
             args[i] = strtok(NULL, delimiter);
         }
         if(!strcmp(args[0],("O"))){
+            atm_locker.add_writer();
             open_account(ATM_id,atoi(args[1]),atoi(args[2]),atoi(args[3]));
             sleep(1);
+            atm_locker.remove_writer();
         }
         else  if(!strcmp(args[0],"D")){
+            atm_locker.add_writer();
             list<account>::iterator it_acc;
             if(find_account(atoi(args[1]),it_acc)){
                 it_acc->deposit(ATM_id,atoi(args[2]),atoi(args[3]));
@@ -42,8 +46,10 @@ void* open_file(void * info){
                 print_no_account_error(ATM_id, atoi(args[1]));
             }
             sleep(1);
+            atm_locker.remove_writer();
         }
         else  if(!strcmp(args[0],"W")){
+            atm_locker.add_writer();
             list<account>::iterator it_acc;
             if(find_account(atoi(args[1]),it_acc)){
                 it_acc->withdrew(ATM_id,atoi(args[2]),atoi(args[3]));
@@ -52,8 +58,10 @@ void* open_file(void * info){
                 print_no_account_error(ATM_id, atoi(args[1]));
             }
             sleep(1);
+            atm_locker.remove_writer();
         }
         else  if(!strcmp(args[0],"B")){
+            atm_locker.add_reader();
             list<account>::iterator it_acc;
             if(find_account(atoi(args[1]),it_acc)){
                 it_acc->find_balance(ATM_id,atoi(args[2]));
@@ -62,14 +70,19 @@ void* open_file(void * info){
                 print_no_account_error(ATM_id, atoi(args[1]));
             }
             sleep(1);
+            atm_locker.remove_reader();
         }
         else  if(!strcmp(args[0],"Q")){
+            atm_locker.add_writer();
             close_account_shell(ATM_id,atoi(args[1]),atoi(args[2]));
             sleep(1);
+            atm_locker.remove_writer();
         }
         else  if(!strcmp(args[0],"T")){
+            atm_locker.add_writer();
             transaction(ATM_id,atoi(args[1]),atoi(args[2]),atoi(args[3]),atoi(args[4]));
             sleep(1);
+            atm_locker.remove_writer();
         }
         else
         {

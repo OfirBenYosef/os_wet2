@@ -8,6 +8,7 @@
 #include "Bank.h"
 list<account> Bank;
 int bank_account;
+
 //add func that check if the acc id is taken
 account::account(int account_id,int password,int balance){
       this->account_id = account_id;
@@ -155,22 +156,27 @@ bool account::operator <(const account & account_2)const{
 }
 void print_accounts(){
     while(1){
+        atm_locker.add_reader();
         Bank.sort();
         printf("\033[2J\033[1;1H");
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             it->print_account();
         }
+        atm_locker.remove_reader();
         usleep(500000);
     }
 }
 void commission(){
     while(1){
+        atm_locker.add_writer();
         int commission = random_commission();
         int bank_gain = 0;
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             bank_gain += it->take_commission(commission);
         }
         bank_account += bank_gain;
+        atm_locker.remove_writer();
         sleep(3);
+        
     }
 }
