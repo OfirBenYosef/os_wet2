@@ -28,8 +28,11 @@ public:
     int account_id;
     int password;
     int balance;
+    locker acc_lock;
+
     
-    account(int account_id,int password,int balance);
+    account(int account_id,int password,int balance,locker acc_lock);
+    ~account();
     void deposit(int ATM,int password,int balance_new);
     void withdrew(int ATM,int password,int balance_new);
     void find_balance(int ATM,int password);
@@ -45,7 +48,10 @@ bool find_account(int account_id,list<account>::iterator it_t);
 void open_account(int ATM,int account_id,int password,int balance);
 void print_no_account_error(int ATM, int account_id);
 void close_account_shell(int ATM,int password,int account_id);
-void print_accounts();
+void* print_accounts(void * nothing);
+void*  commission(void * nothing);
+
+extern bool all_atm_term;
 extern locker atm_locker;
 extern list<account> Bank;
 #endif /* Bank_h */

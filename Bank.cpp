@@ -8,12 +8,16 @@
 #include "Bank.h"
 list<account> Bank;
 int bank_account;
-
+locker atm_locker;
+bool all_atm_term = false;
 //add func that check if the acc id is taken
-account::account(int account_id,int password,int balance){
+account::account(int account_id,int password,int balance,locker acc_lock){
       this->account_id = account_id;
       this->password = password;
       this->balance = balance;
+      this->acc_lock = acc_lock;
+}
+account::~account(){
 }
 
 void account::deposit(int ATM,int password,int balance_new){
@@ -99,7 +103,8 @@ void account::give_transaction(int ATM,int account_id,int amount){
 void open_account(int ATM,int account_id,int password,int balance){
     list<account>::iterator it_acc;
     if(!find_account(account_id,it_acc)){
-        account *new_account = new account(account_id, password,balance);
+        locker new_l;
+        account *new_account = new account(account_id, password,balance,new_l);
         Bank.push_back(*new_account);
         cout<<ATM<<": New account id is "<<account_id<<"> with password "<<password<<" and initial balance "<<balance<<endl;
         return;
@@ -154,20 +159,29 @@ void close_account_shell(int ATM,int account_id,int password){
 bool account::operator <(const account & account_2)const{
     return this->account_id < account_2.account_id;
 }
-void print_accounts(){
+void* print_accounts(void * nothing){
     while(1){
-        atm_locker.add_reader();
+        if(all_atm_term){
+            pthread_exit(nullptr);
+        }
         Bank.sort();
         printf("\033[2J\033[1;1H");
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
+            it->acc_lock.add_reader();
             it->print_account();
+            it->acc_lock.remove_reader();
         }
-        atm_locker.remove_reader();
+        
         usleep(500000);
     }
+    return nullptr;
 }
-void commission(){
+void* commission(void * nothing){
     while(1){
+        if(all_atm_term){
+            pthread_exit(nullptr);
+        }
+        atm_locker.add_reader();
         atm_locker.add_writer();
         int commission = random_commission();
         int bank_gain = 0;
@@ -176,7 +190,9 @@ void commission(){
         }
         bank_account += bank_gain;
         atm_locker.remove_writer();
+        atm_locker.remove_reader();
         sleep(3);
         
     }
+    return nullptr;
 }
