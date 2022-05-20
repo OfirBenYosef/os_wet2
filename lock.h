@@ -36,14 +36,14 @@ public:
     void add_writer();
     void remove_writer();
 };
-class log
+class logger
 {
 public:
     ofstream log_file;
     locker lck;
 
-    log();
-    ~log();
+    logger();
+    ~logger();
 
     void update_log(string txt);
 };

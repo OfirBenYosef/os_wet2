@@ -53,5 +53,6 @@ void*  commission(void * nothing);
 
 extern bool all_atm_term;
 extern locker atm_locker;
+extern logger out_log;
 extern list<account> Bank;
 #endif /* Bank_h */

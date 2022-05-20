@@ -9,6 +9,7 @@
 list<account> Bank;
 int bank_account;
 locker atm_locker;
+logger out_log;
 bool all_atm_term = false;
 //add func that check if the acc id is taken
 account::account(int account_id,int password,int balance,locker acc_lock){
@@ -24,38 +25,38 @@ void account::deposit(int ATM,int password,int balance_new){
 
     if(this->password == password){
       this->balance = this->balance + balance_new;
-        cout<<ATM<<": Account "<<this->account_id<<" new balance is "<<this->balance<<" after "<<balance_new<<" $ was deposited"<<endl;
+        out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" new balance is "+to_string(this->balance)+" after "+to_string(balance_new)+" $ was deposited");
         return;
     }
-    cout <<"Error "<<ATM<<": Your transaction failed – password for account id "<<this->account_id<<" is incorrect"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
 }
 void account::withdrew(int ATM,int password,int balance_new){
     if(this->password == password){
         if(this->balance >= balance_new){
            this->balance = this->balance - balance_new;
-            cout<<ATM<<": Account <"<<this->account_id<<" new balance is <"<<this->balance<<" after "<<balance_new<<" $ was withdrew"<<endl;
+            out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" new balance is "+to_string(this->balance)+" after "+to_string(balance_new)+" $ was withdrew");
         }
         else{
-            cout <<"Error "<<ATM<<": Your transaction failed – account id "<<this->account_id<<" balance is lower than "<<this->balance<<endl;
+            out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(this->balance));
         }
         return;
     }
-    cout <<"Error "<<ATM<<": Your transaction failed – password for account id "<<this->account_id<<" is incorrect"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
 }
 void account::find_balance(int ATM,int password){
     if(this->password == password){
-        cout<<ATM<<": Account "<<this->account_id<<" balance is <"<<this->balance<<endl;
+        out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" balance is "+to_string(this->balance));
         return;
     }
-    cout <<"Error "<<ATM<<": Your transaction failed – password for account id "<<this->account_id<<" is incorrect"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
 }
 bool account::close_account(int ATM,int password){
     //delete from the accout list
     if(this->password == password){
-        cout<<ATM<<": Account "<<this->account_id<<" is now closed. Balance was "<<this->balance<<endl;
+        out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" is now closed. Balance was "+to_string(this->balance));
         return true;
     }
-    cout <<"Error "<<ATM<<": Your transaction failed – password for account id "<<this->account_id<<" is incorrect"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
     return false;
 }
 void account::print_account(){
@@ -74,12 +75,12 @@ int account::take_commission(int amount_of_commission){
     double commission = ((this->balance)*amount_of_commission)/100;
     int r_commission = round(commission);
     this->balance  = this->balance - r_commission;
-    cout<< "Bank: commissions of "<< amount_of_commission <<" % were charged, the bank gaind "<<r_commission << " $ from account " << this->account_id <<endl;
+    out_log.update_log( "Bank: commissions of "+ to_string(amount_of_commission) +" % were charged, the bank gaind "+to_string(r_commission) + " $ from account " +to_string(this->account_id));
     return r_commission;
 }
 
 void print_no_account_error(int ATM, int account_id){
-    cout <<"Error "<<ATM<<": Your transaction failed – account id"<<account_id<<"does not exist"<<endl;
+        out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id"+to_string(account_id)+"does not exist");
 }
 
 bool account::take_transaction(int ATM,int account_id,int password,int amount){
@@ -89,11 +90,11 @@ bool account::take_transaction(int ATM,int account_id,int password,int amount){
             return true;
         }
         else{
-            cout <<"Error "<<ATM<<": Your transaction failed – account id "<<this->account_id<<" balance is lower than "<<amount<<endl;
+            out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(amount));
         }
         return false;
     }
-    cout <<"Error "<<ATM<<": Your transaction failed – password for account id "<<this->account_id<<" is incorrect"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
     return false;
 }
 void account::give_transaction(int ATM,int account_id,int amount){
@@ -106,10 +107,10 @@ void open_account(int ATM,int account_id,int password,int balance){
         locker new_l;
         account *new_account = new account(account_id, password,balance,new_l);
         Bank.push_back(*new_account);
-        cout<<ATM<<": New account id is "<<account_id<<"> with password "<<password<<" and initial balance "<<balance<<endl;
+        out_log.update_log(to_string(ATM)+": New account id is "+to_string(account_id)+" with password "+to_string(password)+" and initial balance "+to_string(balance));
         return;
     }
-    cout<<"Error "<<ATM<<": Your transaction failed – account with the same id exists"<<endl;
+    out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account with the same id exists");
 }
 bool find_account(int account_id,list<account>::iterator it_t){
     for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
@@ -139,7 +140,7 @@ void transaction(int ATM,int account_id,int password,int target,int amount){
     }
     else if(it_acc->take_transaction(ATM,account_id,password,amount)){
         it_target->give_transaction(ATM,target,amount);
-        cout <<ATM<< ": Transfer "<< amount<<" from account "<<account_id <<" to account " <<target<<" new account balance is "<<it_acc->balance<<" new target account balance is "<<it_target->balance<<endl;
+        out_log.update_log(to_string(ATM)+ ": Transfer "+ to_string(amount)+" from account "+to_string(account_id)+" to account " +to_string(target)+" new account balance is "+to_string(it_acc->balance)+" new target account balance is "+to_string(it_target->balance));
     }
 }
 

@@ -81,17 +81,17 @@ void locker::remove_writer(){
     }
 }
 /**************************************************************************************************/
-log::log()
+logger::logger()
 {
     log_file.open("log.txt", ofstream::out | ofstream::trunc);
 }
 
-log::~log()
+logger::~logger()
 {
     log_file.close();
 }
 
-void log::update_log(string txt)
+void logger::update_log(string txt)
 {
     lck.add_writer();
     log_file << txt << endl;
