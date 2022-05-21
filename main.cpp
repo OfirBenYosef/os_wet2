@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
         cout << "illegal arguments" << endl;
         return(1);
     }
-    int num_of_ATMs = argc - 2;
+    int num_of_ATMs = argc - 1;
     
     pthread_t* threads_ATMs = new pthread_t[num_of_ATMs];
     pthread_t thread_print ;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]){
     pair<int, string>* ids = new pair<int, string>[num_of_ATMs];
     for (int i = 0; i < num_of_ATMs; i++)
     {
-        string file(argv[i + 2]);
+        string file(argv[i+1]);
         ids[i].first = i + 1;
         ids[i].second = file;
         if (pthread_create(&(threads_ATMs[i]), nullptr, open_file, &ids[i]) != 0) {

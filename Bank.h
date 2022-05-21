@@ -44,7 +44,7 @@ public:
     bool operator <(const account & account_2)const;
 };
 void transaction(int ATM,int account_id,int password,int target,int amount);
-bool find_account(int account_id,list<account>::iterator it_t);
+bool find_account(int account_id,list<account>::iterator &it_t);
 void open_account(int ATM,int account_id,int password,int balance);
 void print_no_account_error(int ATM, int account_id);
 void close_account_shell(int ATM,int password,int account_id);

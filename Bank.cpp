@@ -60,7 +60,7 @@ bool account::close_account(int ATM,int password){
     return false;
 }
 void account::print_account(){
-    cout <<"Account" <<this->account_id<<": Balance – "<<this->balance <<"$, Account Password – "<<this->password<<endl;
+    cout <<"Account " <<this->account_id<<": Balance – "<<this->balance <<"$, Account Password – "<<this->password<<endl;
 }
 
 int random_commission(){
@@ -83,14 +83,14 @@ void print_no_account_error(int ATM, int account_id){
         out_log.update_log("Error "+to_string(ATM)+" : Your transaction failed – account id "+to_string(account_id)+" does not exist");
 }
 
-bool account::take_transaction(int ATM,int account_id,int password,int amount){
-    if(this->password == password){
-        if(this->balance >= amount){
-           this->balance = this->balance - amount;
+bool account::take_transaction(int ATM,int account_id_g,int password_g,int amount_g){
+    if(password == password_g){
+        if(this->balance >= amount_g){
+           this->balance = this->balance - amount_g;
             return true;
         }
         else{
-            out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(amount));
+            out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(amount_g));
         }
         return false;
     }
@@ -105,14 +105,15 @@ void open_account(int ATM,int account_id,int password,int balance){
     list<account>::iterator it_acc;
     if(!find_account(account_id,it_acc)){
         locker new_l;
-        account *new_account = new account(account_id, password,balance,new_l);
-        Bank.push_back(*new_account);
+        account new_account(account_id, password,balance,new_l);
+        //new_account();
+        Bank.push_back(new_account);
         out_log.update_log(to_string(ATM)+": New account id is "+to_string(account_id)+" with password "+to_string(password)+" and initial balance "+to_string(balance));
         return;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account with the same id exists");
 }
-bool find_account(int account_id,list<account>::iterator it_t){
+bool find_account(int account_id,list<account>::iterator &it_t){
     for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
         if(it->account_id == account_id){
             it_t = it;
@@ -187,14 +188,14 @@ void* commission(void * nothing){
             pthread_exit(nullptr);
         }
         atm_locker.add_reader();
-        atm_locker.add_writer();
+       // atm_locker.add_writer();
         int commission = random_commission();
         int bank_gain = 0;
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             bank_gain += it->take_commission(commission);
         }
         bank_account += bank_gain;
-        atm_locker.remove_writer();
+        //atm_locker.remove_writer();
         atm_locker.remove_reader();
         sleep(3);
         

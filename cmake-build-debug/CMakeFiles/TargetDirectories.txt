@@ -1,0 +1,3 @@
+/Users/dnylpwqs/Documents/oswet2/os_wet2/cmake-build-debug/CMakeFiles/os_wet2.dir
+/Users/dnylpwqs/Documents/oswet2/os_wet2/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/dnylpwqs/Documents/oswet2/os_wet2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
