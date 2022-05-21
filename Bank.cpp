@@ -7,7 +7,7 @@
 
 #include "Bank.h"
 list<account> Bank;
-int bank_account;
+int bank_account = 0;
 locker atm_locker;
 logger out_log;
 bool all_atm_term = false;
@@ -80,7 +80,7 @@ int account::take_commission(int amount_of_commission){
 }
 
 void print_no_account_error(int ATM, int account_id){
-        out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id"+to_string(account_id)+"does not exist");
+        out_log.update_log("Error "+to_string(ATM)+" : Your transaction failed – account id "+to_string(account_id)+" does not exist");
 }
 
 bool account::take_transaction(int ATM,int account_id,int password,int amount){
@@ -166,13 +166,17 @@ void* print_accounts(void * nothing){
             pthread_exit(nullptr);
         }
         Bank.sort();
-        printf("\033[2J\033[1;1H");
+        printf("\033[2J");
+        printf("\033[1;1H");
+        cout << "Current Bank Status" << endl;
+        atm_locker.add_reader();
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             it->acc_lock.add_reader();
             it->print_account();
             it->acc_lock.remove_reader();
         }
-        
+        cout<<"The Bank has "<<bank_account<<" $"<<endl;
+        atm_locker.remove_reader();
         usleep(500000);
     }
     return nullptr;

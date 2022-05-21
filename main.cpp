@@ -21,14 +21,16 @@
 //list<account> Bank;
 
 int main(int argc, char *argv[]){
-    if (argc == 1) {
+    if (argc == 1|| atoi(argv[1]) != argc - 2) {
         cout << "illegal arguments" << endl;
         return(1);
     }
-    int num_of_ATMs = argc - 1;
+    int num_of_ATMs = argc - 2;
+    
     pthread_t* threads_ATMs = new pthread_t[num_of_ATMs];
     pthread_t thread_print ;
     pthread_t thread_commission;
+    
     if (pthread_create(&thread_print, nullptr, print_accounts,nullptr) != 0) {
         perror("pthread_create has failed");
         exit(1);
@@ -40,7 +42,7 @@ int main(int argc, char *argv[]){
     pair<int, string>* ids = new pair<int, string>[num_of_ATMs];
     for (int i = 0; i < num_of_ATMs; i++)
     {
-        string file(argv[i + 1]);
+        string file(argv[i + 2]);
         ids[i].first = i + 1;
         ids[i].second = file;
         if (pthread_create(&(threads_ATMs[i]), nullptr, open_file, &ids[i]) != 0) {

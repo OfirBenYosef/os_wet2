@@ -18,7 +18,7 @@ void* open_file(void * info){
     string line;
     ifstream atm_file(ATM_file);
     const char* delimiter = " ";
-    while(getline(atm_file,line)){
+    while(getline(atm_file, line)){
         usleep(100000);
         char* args[MAX_ARGS];
         int n = line.length();
