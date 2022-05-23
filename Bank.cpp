@@ -188,14 +188,14 @@ void* commission(void * nothing){
             pthread_exit(nullptr);
         }
         atm_locker.add_reader();
-       // atm_locker.add_writer();
+        atm_locker.add_writer();
         int commission = random_commission();
         int bank_gain = 0;
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             bank_gain += it->take_commission(commission);
         }
         bank_account += bank_gain;
-        //atm_locker.remove_writer();
+        atm_locker.remove_writer();
         atm_locker.remove_reader();
         sleep(3);
         

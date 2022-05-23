@@ -1,6 +1,6 @@
 # Makefile for the Bank program
-CC = g++ -pthread
-CFLAGS = -std=c++11 -Wall -Werror -pedantic-errors -DNDEBUG
+CXX = g++ -pthread
+CXXFLAGS = -std=c++11 -Wall -Werror -pedantic-errors -DNDEBUG
 CCLINK = $(CXX)
 OBJS = Bank.o main.o atm.o lock.o
 RM = rm -f
