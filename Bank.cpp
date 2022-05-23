@@ -22,45 +22,62 @@ account::~account(){
 }
 
 void account::deposit(int ATM,int password,int balance_new){
-
-    if(this->password == password){
-      this->balance = this->balance + balance_new;
-        out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" new balance is "+to_string(this->balance)+" after "+to_string(balance_new)+" $ was deposited");
-        return;
+     atm_locker.add_reader();
+     if(this->password == password){
+         acc_lock.add_writer();
+         this->balance = this->balance + balance_new;
+         acc_lock.remove_writer();
+         out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" new balance is "+to_string(this->balance)+" after "+to_string(balance_new)+" $ was deposited");
+         atm_locker.remove_reader();
+         return;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
+    atm_locker.add_reader();
 }
 void account::withdrew(int ATM,int password,int balance_new){
+    atm_locker.add_reader();
     if(this->password == password){
         if(this->balance >= balance_new){
+            acc_lock.add_writer();
            this->balance = this->balance - balance_new;
+           acc_lock.remove_writer();
             out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" new balance is "+to_string(this->balance)+" after "+to_string(balance_new)+" $ was withdrew");
         }
         else{
             out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(this->balance));
         }
+        atm_locker.remove_reader();
         return;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
+    atm_locker.remove_reader();
 }
 void account::find_balance(int ATM,int password){
+    atm_locker.add_reader();
     if(this->password == password){
         out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" balance is "+to_string(this->balance));
+        atm_locker.remove_reader();
         return;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
+    atm_locker.remove_reader();
 }
 bool account::close_account(int ATM,int password){
+    atm_locker.add_reader();
     //delete from the accout list
     if(this->password == password){
         out_log.update_log(to_string(ATM)+": Account "+to_string(this->account_id)+" is now closed. Balance was "+to_string(this->balance));
+        atm_locker.remove_reader();
         return true;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
+    atm_locker.remove_reader();
     return false;
 }
 void account::print_account(){
+    acc_lock.add_reader();
     cout <<"Account " <<this->account_id<<": Balance – "<<this->balance <<"$, Account Password – "<<this->password<<endl;
+    acc_lock.remove_reader();
 }
 
 int random_commission(){
@@ -72,10 +89,14 @@ int random_commission(){
 }
 
 int account::take_commission(int amount_of_commission){
+    atm_locker.add_reader();
     double commission = ((this->balance)*amount_of_commission)/100;
     int r_commission = round(commission);
+    acc_lock.add_writer();
     this->balance  = this->balance - r_commission;
+    acc_lock.remove_writer();
     out_log.update_log( "Bank: commissions of "+ to_string(amount_of_commission) +" % were charged, the bank gaind "+to_string(r_commission) + " $ from account " +to_string(this->account_id));
+    atm_locker.remove_reader();
     return r_commission;
 }
 
@@ -84,42 +105,55 @@ void print_no_account_error(int ATM, int account_id){
 }
 
 bool account::take_transaction(int ATM,int account_id_g,int password_g,int amount_g){
+    atm_locker.add_reader();
     if(password == password_g){
+        acc_lock.add_writer();
         if(this->balance >= amount_g){
            this->balance = this->balance - amount_g;
+           acc_lock.remove_writer();
+           atm_locker.remove_reader();
             return true;
         }
         else{
             out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account id "+to_string(this->account_id)+" balance is lower than "+to_string(amount_g));
         }
+        atm_locker.remove_reader();
         return false;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – password for account id "+to_string(this->account_id)+" is incorrect");
+   atm_locker.remove_reader();
     return false;
 }
 void account::give_transaction(int ATM,int account_id,int amount){
+    acc_lock.add_writer();
     this->balance = this->balance + amount;
+    acc_lock.remove_writer();
 }
 
 void open_account(int ATM,int account_id,int password,int balance){
     list<account>::iterator it_acc;
     if(!find_account(account_id,it_acc)){
         locker new_l;
+        atm_locker.add_writer();
         account new_account(account_id, password,balance,new_l);
         //new_account();
         Bank.push_back(new_account);
+        atm_locker.remove_writer();
         out_log.update_log(to_string(ATM)+": New account id is "+to_string(account_id)+" with password "+to_string(password)+" and initial balance "+to_string(balance));
         return;
     }
     out_log.update_log("Error "+to_string(ATM)+": Your transaction failed – account with the same id exists");
 }
 bool find_account(int account_id,list<account>::iterator &it_t){
+    atm_locker.add_reader();
     for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
         if(it->account_id == account_id){
             it_t = it;
+            atm_locker.remove_reader();
             return true;
         }
     }
+    atm_locker.remove_reader();
     return false;
 }
 void transaction(int ATM,int account_id,int password,int target,int amount){
@@ -148,8 +182,10 @@ void transaction(int ATM,int account_id,int password,int target,int amount){
 void close_account_shell(int ATM,int account_id,int password){
     list<account>::iterator it_acc;
     if(find_account(account_id,it_acc)){
-        if(it_acc->close_account(account_id,password)){
+        if(it_acc->close_account(ATM,password)){
+            atm_locker.add_writer();
             Bank.erase(it_acc);
+            atm_locker.remove_writer();
             return;
         }
         else{
@@ -187,16 +223,12 @@ void* commission(void * nothing){
         if(all_atm_term){
             pthread_exit(nullptr);
         }
-        atm_locker.add_reader();
-        atm_locker.add_writer();
         int commission = random_commission();
         int bank_gain = 0;
         for(list<account>::iterator it = Bank.begin(); it != Bank.end(); it++){
             bank_gain += it->take_commission(commission);
         }
         bank_account += bank_gain;
-        atm_locker.remove_writer();
-        atm_locker.remove_reader();
         sleep(3);
         
     }

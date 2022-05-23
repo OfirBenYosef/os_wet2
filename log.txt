@@ -1,0 +1,17 @@
+1: New account id is 1 with password 1111 and initial balance 100
+1: Account 1 balance is 100
+Error 1: Your transaction failed – password for account id 1 is incorrect
+Bank: commissions of 1 % were charged, the bank gaind 1 $ from account 1
+Error 1: Your transaction failed – password for account id 1 is incorrect
+1: New account id is 12345 with password 1234 and initial balance 50
+Error 1: Your transaction failed – account id 1 balance is lower than 99
+Bank: commissions of 4 % were charged, the bank gaind 3 $ from account 1
+Bank: commissions of 4 % were charged, the bank gaind 2 $ from account 12345
+Error 1: Your transaction failed – password for account id 1 is incorrect
+Error 1 : Your transaction failed – account id 20 does not exist
+Error 1 : Your transaction failed – account id 54123 does not exist
+Error 1 : Your transaction failed – account id 12346 does not exist
+Bank: commissions of 2 % were charged, the bank gaind 1 $ from account 1
+Bank: commissions of 2 % were charged, the bank gaind 0 $ from account 12345
+1: Account 1 balance is 95
+Error 1: Your transaction failed – account id 1 balance is lower than 200
