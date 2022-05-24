@@ -22,6 +22,9 @@ void* open_file(void * info){
         usleep(100000);
         char* args[MAX_ARGS];
         int n = line.length();
+        if(n<2){
+            continue;
+        }
         char* temp_line= new char[n + 1];
         strcpy(temp_line,line.c_str());
         args[0] = strtok(temp_line, delimiter);
