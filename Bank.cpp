@@ -6,6 +6,7 @@
 //
 
 #include "Bank.h"
+#include <string>
 list<account> Bank;
 int bank_account = 0;
 locker atm_locker;
@@ -76,7 +77,9 @@ bool account::close_account(int ATM,int password){
 }
 void account::print_account(){
     acc_lock.add_reader();
-    cout <<"Account " <<this->account_id<<": Balance – "<<this->balance <<"$, Account Password – "<<this->password<<endl;
+    char password_str[5];
+    snprintf (password_str, 5, "%04d", this->password);
+    cout <<"Account " <<this->account_id<<": Balance – "<<this->balance <<"$, Account Password – "<<password_str<<endl;
     acc_lock.remove_reader();
 }
 
@@ -133,7 +136,9 @@ void open_account(int ATM,int account_id,int password,int balance){
         //new_account();
         Bank.push_back(new_account);
         atm_locker.remove_writer();
-        out_log.update_log(to_string(ATM)+": New account id is "+to_string(account_id)+" with password "+to_string(password)+" and initial balance "+to_string(balance));
+        char password_str[5];
+        snprintf (password_str, 5, "%04d", password);
+        out_log.update_log(to_string(ATM)+": New account id is "+to_string(account_id)+" with password "+password_str+" and initial balance "+to_string(balance));
         return;
     }
     atm_locker.remove_writer();
